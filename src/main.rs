@@ -1,35 +1,113 @@
-use std::{env, fs};
-use std::collections::HashSet;
-
+use std::{env};
+use std::collections::{HashSet};
+use std::sync::Arc;
+use std::time::Duration;
 use env_logger;
 use log::{error, info};
-use serenity::Client;
-use serenity::framework::StandardFramework;
-use serenity::http::Http;
+use serenity::{
+    async_trait,
+    client::bridge::gateway::ShardManager,
+    framework::StandardFramework,
+    http::Http,
+    model::{event::ResumedEvent, gateway::Ready},
+    prelude::*,
+};
+use serenity::model::id::{GuildId, UserId};
+use serenity::model::prelude::RoleId;
 use solanabeach::*;
+
+// A container type is created for inserting into the Client's `data`, which
+// allows for data to be accessible across all events and framework commands, or
+// anywhere else that has a copy of the `data` Arc.
+// These places are usually where either Context or Client is present.
+//
+// Documentation about TypeMap can be found here:
+// https://docs.rs/typemap_rev/0.1/typemap_rev/struct.TypeMap.html
+
+
+pub struct ShardManagerContainer;
+
+impl TypeMapKey for ShardManagerContainer {
+    type Value = Arc<Mutex<ShardManager>>;
+}
+
+struct Handler;
+
+
+#[async_trait]
+impl EventHandler for Handler {
+    async fn ready(&self, _: Context, ready: Ready) {
+        info!("Connected as {}", ready.user.name);
+    }
+
+    async fn resume(&self, _: Context, _: ResumedEvent) {
+        info!("Resumed");
+    }
+
+    async fn cache_ready(&self, ctx: Context, guilds: Vec<GuildId>) {
+        let sleep_time = env::var("LOOP_SLEEP").unwrap_or("0".to_string()).parse::<u64>().unwrap();
+        let user_id = env::var("USER_ID").expect("ENV USER_ID Not-Found").parse::<u64>().unwrap();
+
+        //Get Role ids form Name
+        let mut red_role_id: RoleId = Default::default();
+        let mut green_role_id: RoleId = Default::default();
+        for guild in guilds.clone() {
+            let roles = guild.roles(&ctx).await;
+            for (_role_id, role) in roles.unwrap() {
+                if role.name.contains("tickers-red") {
+                    red_role_id = role.id;
+                }
+                if role.name.contains("tickers-green") {
+                    green_role_id = role.id;
+                }
+            }
+        }
+
+
+        if sleep_time != 0 {
+            info!("Starting update loop...");
+            loop {
+                if env::var("UPDATE_NAME").unwrap_or("true".to_string()).parse::<bool>().unwrap() {
+                    info!("Message posted");
+                    for guild in guilds.clone() {
+
+                        //Get Solana TPS
+                        let blocks = solana_beach_api::latest_blocks(50).await.unwrap();
+                        let timespan = blocks.first().unwrap().block_time.absolute - blocks.last().unwrap().block_time.absolute;
+
+                        let mut sum_tx = 0;
+                        for block in blocks {
+                            sum_tx = sum_tx + block.metrics.tx_count;
+                        }
+                        let tps = sum_tx / timespan;
+
+
+                        let color_threshold = env::var("COLOR_THRESHOLD").expect("ENV COLOR_THRESHOLD Not-Found").parse::<i32>().unwrap();
+                        match tps {
+                            tps if tps > color_threshold => {
+                                guild.member(&ctx.http, UserId(user_id)).await.unwrap().remove_role(&ctx, red_role_id).await.unwrap();
+                                guild.member(&ctx.http, UserId(user_id)).await.unwrap().add_role(&ctx, green_role_id).await.unwrap();
+                                guild.edit_nickname(&ctx, Some(format!("🚀  ~{} TPS", tps).as_ref())).await;
+                            }
+                            tps if tps < color_threshold => {
+                                guild.member(&ctx.http, UserId(user_id)).await.unwrap().remove_role(&ctx, green_role_id).await.unwrap();
+                                guild.member(&ctx.http, UserId(user_id)).await.unwrap().add_role(&ctx, red_role_id).await.unwrap();
+                                guild.edit_nickname(&ctx, Some(format!("🔥  ~{} TPS", tps).as_ref())).await;
+                            }
+                            _ => {}
+                        };
+                    }
+                }
+                tokio::time::sleep(Duration::from_secs(sleep_time)).await;
+            }
+        }
+    }
+}
 
 #[tokio::main]
 async fn main() {
     env_logger::init();
-
-    let contents = fs::read_to_string("tokenlist.toml")
-        .expect("Something went wrong reading the conf file!");
-
-    solana_beach_api::latest_transactions(2).await.unwrap();
-    let blocks = solana_beach_api::latest_blocks(50).await.unwrap();
-
-
-    let timespan = blocks.first().unwrap().block_time.absolute - blocks.last().unwrap().block_time.absolute;
-
-    let mut sum_tx = 0;
-    for block in blocks {
-        info!("{:?}",block.metrics);
-        sum_tx = sum_tx + block.metrics.tx_count;
-    }
-
-    info!("TPS={}", sum_tx/timespan);
-
-    println!("Hello, world!");
+    //tracing_subscriber::fmt::init();
 
     let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
     let http = Http::new_with_token(&token);
@@ -47,8 +125,8 @@ async fn main() {
 
     // Create the framework
     let framework =
-        StandardFramework::new().configure(|c| c.owners(owners).prefix("~"))
-            .group(&GENERAL_GROUP);
+        StandardFramework::new().configure(|c| c.owners(owners).prefix("~"));
+
 
     let mut client = Client::builder(&token)
         .framework(framework)
