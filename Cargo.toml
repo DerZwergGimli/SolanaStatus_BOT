@@ -16,3 +16,4 @@ serde = { version = "*", features = ["derive"] }
 serde_json = "*"
 html_parser = "*"
 solanabeach = {path = "./src/solana_helper/solanabeach"}
+serenity = {version = "0.10.10", features = ["utils", "cache", "framework", "standard_framework", "rustls_backend"]}
