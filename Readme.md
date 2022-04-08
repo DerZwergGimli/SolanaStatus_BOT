@@ -58,7 +58,7 @@ SOLANABEACH_TOKEN=<CAN BE EMPTY>
 ## Deploy via Docker
 
 - Copy the `docker-compose.yaml.sample` to `docker-compose.yaml`
-- Add you Token and later and BOT_ID
+- Add you <DISCORD_TOKEN> and <BOT_USER_ID>
 - Start you BOT with `docker-compose up -d`
 
 ### Donations:

@@ -7,10 +7,10 @@ services:
     image: sol_status_bot
     environment:
       RUST_LOG: info
-      DISCORD_TOKEN: "<YOUR_DISCORD_TOKEN>"
+      DISCORD_TOKEN: "<DISCORD_TOKEN>"
       SLOOP_SLEEP: 60
-      UPDATE_NAME: true
-      USER_ID: "BOT_ID"
+      UPDATE_NAME: "true"
+      USER_ID: "<BOT_USER_ID>"
 
     restart: unless-stopped
     volumes:
