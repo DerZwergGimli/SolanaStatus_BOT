@@ -52,7 +52,7 @@ COLOR_THRESHOLD=999
 - Oprional:
 
 ```gitignore
-SOLANABEACH_TOKEN=<CAN BE EMPTY>
+SOLANABEACH_TOKEN=<SOLANABEACH_TOKEN>
 ```
 
 ## Deploy via Docker
