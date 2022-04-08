@@ -1,7 +1,8 @@
 # SolanaStatus_BOT
 
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 ![example workflow](https://github.com/DerZwergGimli/SolanaStatus_BOT/actions/workflows/rust.yml/badge.svg)
-![badge_license](https://img.shields.io/github/license/derzwerggimli/SolanaStatus_BOT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![badge_discord](https://badgen.net/badge/icon/discord?icon=discord&label)
 
 ![badge_docker_size](https://badgen.net/docker/pulls/derzwerggimli/sol_status_bot)
