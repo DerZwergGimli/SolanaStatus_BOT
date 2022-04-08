@@ -1,5 +1,12 @@
 # SolanaStatus_BOT
 
+![example workflow](https://github.com/DerZwergGimli/SolanaStatus_BOT/actions/workflows/rust.yml/badge.svg)
+![badge_license](https://img.shields.io/github/license/derzwerggimli/SolanaStatus_BOT)
+![badge_discord](https://badgen.net/badge/icon/discord?icon=discord&label)
+
+![badge_docker_size](https://badgen.net/docker/pulls/derzwerggimli/sol_status_bot)
+![badge_docker_size](https://badgen.net/docker/size/derzwerggimli/sol_status_bot)
+
 This repo contains a Discord bot that is monitoring the SolanaBlockchain.
 
 !["bot icon""](icon.drawio.png)
