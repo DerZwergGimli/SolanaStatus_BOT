@@ -17,6 +17,10 @@ RUN cargo build --release --bin sol_status_bot
 
 # We do not need the Rust toolchain to run the binary!
 FROM debian:bullseye-slim AS runtime
+RUN apt-get update
+RUN apt-get install openssl -y
+RUN apt-get install curl -y
+
 WORKDIR app
 COPY --from=builder /app/target/release/sol_status_bot /usr/local/bin
 ENTRYPOINT ["/usr/local/bin/sol_status_bot"]

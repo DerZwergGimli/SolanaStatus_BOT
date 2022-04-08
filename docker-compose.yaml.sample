@@ -1,0 +1,17 @@
+version: "3"
+services:
+  utcbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sol_status_bot
+    environment:
+      RUST_LOG: info
+      DISCORD_TOKEN: "<YOUR_DISCORD_TOKEN>"
+      SLOOP_SLEEP: 60
+      UPDATE_NAME: true
+      USER_ID: "BOT_ID"
+
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
