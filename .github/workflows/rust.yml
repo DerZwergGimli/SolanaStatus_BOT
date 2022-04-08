@@ -20,4 +20,4 @@ jobs:
     - name: Checkout submodules
     - uses: derzwerggimli/solana_helper@master
     - name: Build
-      run: cargo build --release --verbose
+    - run: cargo build --release --verbose
