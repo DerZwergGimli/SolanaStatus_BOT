@@ -18,6 +18,6 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v3
     - name: Checkout submodules
-      uses: derzwerggimli/solana_helper@master
+      uses: derzwerggimli/solana_helper@main
     - name: Build
       run: cargo build --release --verbose
