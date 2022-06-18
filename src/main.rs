@@ -53,7 +53,7 @@ impl EventHandler for Handler {
             .collect::<Vec<_>>();
         let color_threshold = env::var("COLOR_THRESHOLD").expect("ENV COLOR_THRESHOLD Not-Found").parse::<i32>().unwrap();
 
-                if sleep_time != 0 {
+        if sleep_time != 0 {
             info!("Starting update loop...");
             loop {
                 if env::var("UPDATE_NAME").unwrap_or("true".to_string()).parse::<bool>().unwrap() {
@@ -61,54 +61,56 @@ impl EventHandler for Handler {
                     for guild in guilds.clone() {
 
                         //Get Solana TPS
-                        let blocks = solana_beach_api::latest_blocks(50).await.unwrap_or(break);
-                        let timespan = blocks.first().unwrap().block_time.absolute - blocks.last().unwrap().block_time.absolute;
+                        let blocks = solana_beach_api::latest_blocks(50).await.unwrap_or_default();
+                        if !blocks.is_empty() {
+                            let timespan = blocks.first().unwrap().block_time.absolute - blocks.last().unwrap().block_time.absolute;
 
 
-                        let mut sum_tx = 0;
-                        for block in blocks {
-                            sum_tx = sum_tx + block.metrics.tx_count;
-                        }
-                        let tps = sum_tx / timespan;
-                        match tps {
-                            tps if tps > color_threshold => {
-                                guild.edit_nickname(&ctx, Some(format!("🚀  ~{} TPS", tps).as_ref())).await;
+                            let mut sum_tx = 0;
+                            for block in blocks {
+                                sum_tx = sum_tx + block.metrics.tx_count;
                             }
-                            tps if tps < color_threshold => {
-                                guild.edit_nickname(&ctx, Some(format!("🔥  ~{} TPS", tps).as_ref())).await;
-                            }
-                            _ => {}
-                        };
-
-                        //Get Role ids form Name
-                        let mut red_role_id: RoleId = Default::default();
-                        let mut green_role_id: RoleId = Default::default();
-                        for guild in guilds.clone() {
-                            let roles = guild.roles(&ctx).await;
-                            for (_role_id, role) in roles.unwrap() {
-                                if role.name.contains("tickers-red") {
-                                    red_role_id = role.id;
-                                }
-                                if role.name.contains("tickers-green") {
-                                    green_role_id = role.id;
-                                }
-                            }
-                        }
-
-                        for user_id in user_ids.clone() {
-                            let uid = user_id.to_string().parse::<u64>().unwrap();
-
+                            let tps = sum_tx / timespan;
                             match tps {
                                 tps if tps > color_threshold => {
-                                    guild.member(&ctx.http, UserId(uid)).await.unwrap().remove_role(&ctx, red_role_id).await.unwrap();
-                                    guild.member(&ctx.http, UserId(uid)).await.unwrap().add_role(&ctx, green_role_id).await.unwrap();
+                                    guild.edit_nickname(&ctx, Some(format!("🚀  ~{} TPS", tps).as_ref())).await;
                                 }
                                 tps if tps < color_threshold => {
-                                    guild.member(&ctx.http, UserId(uid)).await.unwrap().remove_role(&ctx, green_role_id).await.unwrap();
-                                    guild.member(&ctx.http, UserId(uid)).await.unwrap().add_role(&ctx, red_role_id).await.unwrap();
+                                    guild.edit_nickname(&ctx, Some(format!("🔥  ~{} TPS", tps).as_ref())).await;
                                 }
                                 _ => {}
                             };
+
+                            //Get Role ids form Name
+                            let mut red_role_id: RoleId = Default::default();
+                            let mut green_role_id: RoleId = Default::default();
+                            for guild in guilds.clone() {
+                                let roles = guild.roles(&ctx).await;
+                                for (_role_id, role) in roles.unwrap() {
+                                    if role.name.contains("tickers-red") {
+                                        red_role_id = role.id;
+                                    }
+                                    if role.name.contains("tickers-green") {
+                                        green_role_id = role.id;
+                                    }
+                                }
+                            }
+
+                            for user_id in user_ids.clone() {
+                                let uid = user_id.to_string().parse::<u64>().unwrap();
+
+                                match tps {
+                                    tps if tps > color_threshold => {
+                                        guild.member(&ctx.http, UserId(uid)).await.unwrap().remove_role(&ctx, red_role_id).await.unwrap();
+                                        guild.member(&ctx.http, UserId(uid)).await.unwrap().add_role(&ctx, green_role_id).await.unwrap();
+                                    }
+                                    tps if tps < color_threshold => {
+                                        guild.member(&ctx.http, UserId(uid)).await.unwrap().remove_role(&ctx, green_role_id).await.unwrap();
+                                        guild.member(&ctx.http, UserId(uid)).await.unwrap().add_role(&ctx, red_role_id).await.unwrap();
+                                    }
+                                    _ => {}
+                                };
+                            }
                         }
                     }
                 }
