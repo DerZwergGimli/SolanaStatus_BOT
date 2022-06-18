@@ -73,10 +73,10 @@ impl EventHandler for Handler {
                             let tps = sum_tx / timespan;
                             match tps {
                                 tps if tps > color_threshold => {
-                                    guild.edit_nickname(&ctx, Some(format!("🚀  ~{} TPS", tps).as_ref())).await;
+                                    guild.edit_nickname(&ctx, Some(format!("🚀  ~{} TPS", tps).as_ref())).await.expect("Unable to change bot_name of bot");
                                 }
                                 tps if tps < color_threshold => {
-                                    guild.edit_nickname(&ctx, Some(format!("🔥  ~{} TPS", tps).as_ref())).await;
+                                    guild.edit_nickname(&ctx, Some(format!("🔥  ~{} TPS", tps).as_ref())).await.expect("Unable to change bot_name of bot");
                                 }
                                 _ => {}
                             };
