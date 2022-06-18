@@ -61,7 +61,7 @@ impl EventHandler for Handler {
                     for guild in guilds.clone() {
 
                         //Get Solana TPS
-                        let blocks = solana_beach_api::latest_blocks(50).await.unwrap();
+                        let blocks = solana_beach_api::latest_blocks(50).await.unwrap_or(break);
                         let timespan = blocks.first().unwrap().block_time.absolute - blocks.last().unwrap().block_time.absolute;
 
 
