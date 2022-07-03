@@ -86,7 +86,7 @@ impl EventHandler for Handler {
                             let mut green_role_id: RoleId = Default::default();
                             for guild in guilds.clone() {
                                 let roles = guild.roles(&ctx).await;
-                                for (_role_id, role) in roles.unwrap() {
+                                for (_role_id, role) in roles.expect("no guild roles found!") {
                                     if role.name.contains("tickers-red") {
                                         red_role_id = role.id;
                                     }
