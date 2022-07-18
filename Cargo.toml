@@ -8,13 +8,7 @@ edition = "2021"
 [dependencies]
 env_logger = "0.9"
 log = "0.4.1"
-toml = "0.5"
-reqwest = { version="0.11.9", features = ["default-tls"]}
-tokio = {version ="1.0.0", features = ["full"]}
-json = "*"
-serde = { version = "*", features = ["derive"] }
-serde_json = "*"
-html_parser = "*"
-solanabeach = {path = "./src/solana_helper/solanabeach"}
-serenity = {version = "0.10.10", features = ["utils", "cache", "framework", "standard_framework", "rustls_backend"]}
-tracing-subscriber = "0.2"
+tokio = { version = "1.0.0", features = ["full"] }
+chrono = { version = "0.4", features = ["clock"] }
+serenity = { version = "0.11.1", features = ["client", "gateway", "rustls_backend", "model", "cache", "cache", "framework", "standard_framework", "rustls_backend"] }
+solscan-api = "0.1.2"

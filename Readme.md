@@ -41,12 +41,12 @@ Create 2 Roles in you Discord Server so the bot will change its Nickname color b
 - Required:
 
 ```gitignore
-RUST_LOG=error
+BOT_PREFIX=!
+RUST_LOG=warn
 DISCORD_TOKEN=<DISCORD_TOKEN>
-LOOP_SLEEP=60
-UPDATE_NAME=true
-USER_ID=<BOT_USER_ID>
-COLOR_THRESHOLD=999
+LOOP_UPDATE_SLEEP=5
+TPS_THRESHOLD=2000
+
 ```
 
 - Oprional:
