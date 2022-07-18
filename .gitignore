@@ -1,3 +1,4 @@
 /target
 hidden.file
 docker-compose.yaml
+/src/solana_helper/solanabeach/target
