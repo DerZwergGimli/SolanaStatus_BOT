@@ -1,0 +1,16 @@
+version: "3"
+services:
+  sol-status-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sol_status_bot
+    environment:
+      RUST_LOG: warn
+      DISCORD_TOKEN: "<DISCORD_TOKEN>"
+      LOOP_UPDATE_SLEEP: 60
+      TPS_THRESHOLD: 2000
+
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
