@@ -1,5 +1,7 @@
 # SolanaStatus_BOT
 
+❗ new version is here: https://github.com/DerZwergGimli/solana_tps_bot ❗
+
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![buid-test](https://github.com/DerZwergGimli/SolanaStatus_BOT/actions/workflows/rust.yml/badge.svg)](https://github.com/DerZwergGimli/SolanaStatus_BOT/actions/workflows/rust.yml)
 [![deploy-to-dockerhub](https://github.com/DerZwergGimli/SolanaStatus_BOT/actions/workflows/docker.yml/badge.svg)](https://github.com/DerZwergGimli/SolanaStatus_BOT/actions/workflows/docker.yml)
